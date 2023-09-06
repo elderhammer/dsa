@@ -105,6 +105,39 @@ impl<T: Display + Ord> Node<T> {
         }
     }
 
+    pub fn remove(link: &mut Link<T>, target: &T) -> Link<T> {
+        unsafe {
+            let node = link.as_mut().unwrap().as_mut();
+            if target < &node.elem {
+                if node.left_child.is_some() {
+                    Self::remove(&mut node.left_child, target)
+                } else {
+                    None
+                }
+            } else if &node.elem > target {
+                if node.right_child.is_some() {
+                    Self::remove(&mut node.right_child, target)
+                } else {
+                    None
+                }
+            } else if &node.elem == target {
+                if node.left_child.is_none() && node.right_child.is_none() {
+                    link.take()
+                } else if node.left_child.is_some() && node.right_child.is_none() {
+                    let mut removed_link = link.take();
+                    link.replace(removed_link.as_mut().unwrap().as_mut().left_child.take().unwrap())
+                } else if node.left_child.is_none() && node.right_child.is_some() {
+                    let mut removed_link = link.take();
+                    link.replace(removed_link.as_mut().unwrap().as_mut().right_child.take().unwrap())
+                } else {
+                    link.take()
+                }
+            } else {
+                None
+            }
+        }
+    }
+
     pub fn locate_mut(&mut self, target: &T) -> &mut Node<T> {
         let mut node = self;
         'outer: loop {
