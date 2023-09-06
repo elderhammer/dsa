@@ -97,7 +97,7 @@ impl<T: Display + Ord> Node<T> {
     pub fn insert(&mut self, target: T) {
         let new_node = Node::new(target);
 
-        let node = self.seek_mut(&new_node.elem);
+        let node = self.locate_mut(&new_node.elem);
         if new_node.elem < node.elem {
             node.add_left_child(new_node);
         } else if node.elem < new_node.elem {
@@ -105,14 +105,12 @@ impl<T: Display + Ord> Node<T> {
         }
     }
 
-    // 返回停止寻找的那个节点的可变引用
-    pub fn seek_mut(&mut self, target: &T) -> &mut Node<T> {
+    pub fn locate_mut(&mut self, target: &T) -> &mut Node<T> {
         let mut node = self;
         'outer: loop {
             if &node.elem < target {
                 if node.right_child.is_some() {
                     unsafe {
-                        // 没有交叉作用域，不用担心借用规则
                         node = node.right_child.as_mut().unwrap().as_mut()
                     }
                 } else {
@@ -121,7 +119,6 @@ impl<T: Display + Ord> Node<T> {
             } else if  target < &node.elem {
                 if node.left_child.is_some() {
                     unsafe {
-                        // 没有交叉作用域，不用担心借用规则
                         node = node.left_child.as_mut().unwrap().as_mut()
                     }
                 } else {
@@ -172,6 +169,15 @@ impl<T: Display + Ord> BSTree<T> {
             }
         } else {
             self.root = Node::new(target).to_link();
+        }
+    }
+
+    pub fn preorder_traversal(&self) {
+        if let Some(node) = &self.root {
+            unsafe {
+                node.as_ref().preorder_traversal()
+            }
+            println!("");
         }
     }
 }
@@ -229,8 +235,7 @@ mod tests {
         for number in numbers {
             tree.insert(number);
         }
-        unsafe {
-            tree.root.as_ref().unwrap().as_ref().preorder_traversal();
-        }
+
+        tree.preorder_traversal();
     }
 }
