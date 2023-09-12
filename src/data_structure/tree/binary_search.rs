@@ -270,5 +270,16 @@ mod tests {
         }
 
         tree.preorder_traversal();
+
+        
+        let foo = Box::new(1u64);
+        let bar = Some(foo.clone());
+        println!("Size of box: {}", std::mem::size_of_val(&foo));
+        println!("Size of option.box: {}", std::mem::size_of_val(&bar));
+
+        println!("NonNull<T> allows `Option<T>`'s discriminant to be collapsed into the pointer:");
+        println!("*mut u64: {} bytes", std::mem::size_of::<*mut u64>());
+        println!("Option<*mut u64>: {} bytes", std::mem::size_of::<Option<*mut u64>>());
+        println!("Option<Box<*mut u64>>: {} bytes", std::mem::size_of::<Option<Box<*mut u64>>>());
     }
 }
