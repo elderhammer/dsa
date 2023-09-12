@@ -239,7 +239,7 @@ mod tests {
     }
 
     #[test]
-    fn contains() {
+    fn bst_contains() {
         let tree = a_numric_tree();
 
         let target_two = 2;
@@ -253,7 +253,7 @@ mod tests {
     }
 
     #[test]
-    fn insert() {
+    fn bst_insert() {
         let mut tree = a_numric_tree();
 
         let target: i32 = 7;
