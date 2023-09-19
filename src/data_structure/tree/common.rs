@@ -42,11 +42,11 @@ pub struct FileData {
 }
 
 impl FileData {
-    pub fn newFile(name: &str, size: u32) -> Self {
+    pub fn new_file(name: &str, size: u32) -> Self {
         Self::new(name, FileCat::File, size)
     }
 
-    pub fn newDir(name: &str) -> Self {
+    pub fn new_dir(name: &str) -> Self {
         Self::new(name, FileCat::Dir, 1)
     }
 
@@ -155,7 +155,7 @@ mod tests {
     use super::*;
 
     fn root_dir() -> FileData {
-        FileData::newDir("/usr")
+        FileData::new_dir("/usr")
     }
 
     #[test]
