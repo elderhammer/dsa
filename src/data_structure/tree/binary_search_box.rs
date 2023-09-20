@@ -28,9 +28,13 @@ impl<T: Ord> Node<T> {
 }
 
 impl<T: Ord> Tree<T> {
+    pub fn new(option_node: Option<Box<Node<T>>>) -> Self {
+        Self(option_node)
+    }
+
     // 创建一棵空树
     pub fn empty() -> Self {
-        Self(None)
+        Self::new(None)
     }
 
     pub fn min(&self) -> Option<&T> {
@@ -74,8 +78,40 @@ impl<T: Ord> Tree<T> {
         true
     }
 
-    pub fn remove(&mut self, target: &T) -> bool {
+    pub fn remove(&mut self, target: &T) -> Option<Tree<T>> {
+        let mut current = self as *mut Tree<T>;
 
+        unsafe {
+            // node 是从 current.0 借到的 mut ref，作用域是整个 {}，所以不能二次借用 mut ref
+            while let Some(ref mut node) = (*current).0 {
+                let option_tree = match node.data.cmp(&target) {
+                    Ordering::Less => current = &mut node.right,
+                    Ordering::Greater => current = &mut node.left,
+                    Ordering::Equal => match (&node.left.0, &node.right.0) {
+                        (None, None) => {
+                            // no child
+                            Some(Self::new((*current).0.take()))
+                        }
+                        (Some(_), None) => {
+                            // left child
+                            unimplemented!()
+                        }
+                        (None, Some(_)) => {
+                            // right child
+                            unimplemented!()
+                        }
+                        (Some(_), Some(_)) => {
+                            // two child
+                            unimplemented!()
+                        }
+                    }
+                };
+
+                return option_tree;
+            }
+        }
+
+        None
     }
 }
 
